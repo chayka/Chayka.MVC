@@ -19,7 +19,7 @@
         {
             "name" : "chayka/helpers",
             "type" : "git",
-            "url" : "~/PhpstormProjects/Chayka.Helpers"
+            "url" : "/Users/borismossounov/PhpstormProjects/Chayka.Helpers"
         }
     ],
     "require":{
