@@ -15,7 +15,17 @@
             "Chayka\\": "src/"
         }
     },
-    "require": {
+    "repositories": [
+        {
+            "name" : "chayka/helpers",
+            "type" : "git",
+            "url" : "~/PhpstormProjects/Chayka.Helpers"
+        }
+    ],
+    "require":{
+        "chayka/helpers": "*"
+    },
+    "require-dev": {
         "phpunit/phpunit": "4.4.x-dev"
     }
 }
