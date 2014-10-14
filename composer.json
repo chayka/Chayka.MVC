@@ -1,6 +1,7 @@
 {
     "name": "chayka/mvc",
     "description": "Simple MVC framework",
+    "type": "library",
     "minimum-stability": "dev",
     "license": "MIT",
     "authors": [
