@@ -24,6 +24,12 @@ class Application {
         $this->appId = $appId;
         $this->router = new Router();
         $this->controllers = array();
+
+        set_include_path($appPath.PATH_SEPARATOR.get_include_path());
+
+        if(file_exists($appPath.'/autoload.php')){
+            require_once $appPath.'/autoload.php';
+        }
     }
 
     /**
