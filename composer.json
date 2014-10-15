@@ -12,7 +12,7 @@
     ],
     "autoload": {
         "PSR-4": {
-            "Chayka\\": "src/Chayka/"
+            "Chayka\\MVC\\": "src/Chayka/MVC/"
         }
     },
     "repositories": [
