@@ -2,6 +2,8 @@
 
 namespace Chayka\MVC;
 
+use Chayka\Helpers\FsHelper;
+use Chayka\Helpers\NlsHelper;
 use Chayka\Helpers\Util;
 
 class View {
@@ -9,15 +11,16 @@ class View {
     protected $vars = array();
     protected $basePaths = array('');
     protected $path = '';
+    protected $nls = false;
 
     /**
      * Declare defaults var values, can be called
      *
      * @param $vars
      */
-    public function defaultVars($vars){
+    public function declareVars($vars){
         foreach($vars as $key=>$val){
-            if(!is_set($this->vars[$key])){
+            if(!isset($this->vars[$key])){
                 $this->vars[$key] = $val;
             }
         }
@@ -53,7 +56,18 @@ class View {
     public function render($path){
         foreach($this->basePaths as $base){
             $fn =$base.$path;
-            if(file_exists($base.$path)){
+            if($this->nls){
+                $fn_ = FsHelper::setExtensionPrefix($fn, '_');
+                $fnLang = FsHelper::setExtensionPrefix($fn, NlsHelper::getLang());
+                if(file_exists($fnLang)){
+                    $fn = $fnLang;
+                }else if(file_exists($fn_)){
+                    $fn = $fn_;
+                }
+            }else if(!file_exists($fn)){
+                $fn = '';
+            }
+            if($fn){
                 ob_start();
                 require($fn);
                 $res = ob_get_clean();
@@ -71,7 +85,7 @@ class View {
      * @param $vars
      * @return null|string
      */
-    public function partial($path, $vars){
+    public function partial($path, $vars = array()){
         $view = new self();
         foreach($this->basePaths as $basePath){
             $view->addBasePath($basePath);
@@ -80,6 +94,53 @@ class View {
 
         return $view->render($path);
     }
+
+    /**
+     * If turned on, when rendered, view will search localized version of template.
+     * E.g. 'auth.en.phtml' if 'auth.phtml' requested.
+     *
+     * @param bool $enable
+     */
+    public function enableNls($enable = true){
+        $this->nls = $enable;
+    }
+
+    /**
+     * Get localized value, or value itself if localization is not found
+     * This function can get multiple args and work like sprintf($template, $arg1, ... $argN)
+     * Hint: Use $format = 'На %2$s сидят %1$d обезьян';
+     *
+     * @param string $value String to translate
+     * @return string
+     */
+    public static function _($value) {
+        if(func_num_args()>1){
+            $args = func_get_args();
+            $args[0] = NlsHelper::translate($value);
+            return call_user_func_array('sprintf', $args);
+        }
+        return NlsHelper::translate($value);
+    }
+
+    /**
+     * Echo localized value, or value itself if localization is not found
+     * This function can get multiple args and work like sprintf($template, $arg1, ... $argN)
+     * Hint: Use $format = 'На %2$s сидят %1$d обезьян';
+     *
+     * @param string $value String to translate
+     * @return string
+     */
+    public static function __($value){
+        if(func_num_args()>1){
+            $args = func_get_args();
+            $args[0] = NlsHelper::translate($value);
+            echo $res = call_user_func_array('sprintf', $args);
+            return $res;
+        }
+        echo $res = NlsHelper::translate($value);
+        return $res;
+    }
+
 
     /**
      * Assign template var.

@@ -25,7 +25,7 @@ class Application {
         $this->router = new Router();
         $this->controllers = array();
 
-        set_include_path($appPath.PATH_SEPARATOR.get_include_path());
+//        set_include_path($appPath.PATH_SEPARATOR.get_include_path());
 
         if(file_exists($appPath.'/autoload.php')){
             require_once $appPath.'/autoload.php';
@@ -60,6 +60,7 @@ class Application {
                     $controllerClassname1 = '\\'.$this->appId.'\\'.$controllerClassname;
                     $controllerClassname2 = $this->appId.'_'.$controllerClassname;
                     require_once $controllerSrc;
+//                    echo $controllerSrc . ' '.$controllerClassname1.' '.$controllerClassname2;
                     if(class_exists($controllerClassname1)){
                         $controllerObject = new $controllerClassname1($this->appPath);
                     }elseif(class_exists($controllerClassname2)){

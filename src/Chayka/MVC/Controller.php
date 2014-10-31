@@ -46,6 +46,7 @@ abstract class Controller {
         if(method_exists($this, $callback)){
             InputHelper::setInput($request);
             ob_start();
+            $this->init();
             call_user_func(array($this, $callback));
             $res = ob_get_clean();
             return $res.$this->view->render($controller.'/'.$action.'.phtml');
@@ -53,7 +54,7 @@ abstract class Controller {
             throw new \Exception('Action not found', 0);
         }
 
-        return null;
+//        return null;
     }
 
     /**
