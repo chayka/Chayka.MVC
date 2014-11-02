@@ -64,7 +64,8 @@ class View {
                 }else if(file_exists($fn_)){
                     $fn = $fn_;
                 }
-            }else if(!file_exists($fn)){
+            }
+            if(!file_exists($fn)){
                 $fn = '';
             }
             if($fn){
