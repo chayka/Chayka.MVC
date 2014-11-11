@@ -58,6 +58,18 @@ abstract class Controller {
     }
 
     /**
+     * TODO: implement forward helper
+     * After dispatching current action forwards processing to specified action controller.
+     *
+     * @param $action
+     * @param string $controller
+     * @param string $appId
+     */
+    public function forward($action, $controller = '', $appId = ''){
+
+    }
+
+    /**
      * Convert action path string to callback name
      *
      * @param $path
