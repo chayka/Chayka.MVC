@@ -50,10 +50,16 @@ class View {
     /**
      * Render .phtml template
      *
-     * @param $path
+     * @param string $path
+     * @param array $vars
      * @return null|string
      */
-    public function render($path){
+    public function render($path, $vars = array()){
+
+        if($vars && is_array($vars) && count($vars)){
+            $this->declareVars($vars);
+        }
+
         foreach($this->basePaths as $base){
             $fn =$base.$path;
             if($this->nls){
@@ -75,7 +81,7 @@ class View {
                 return $res;
             }
         }
-//        throw new Exception('View not found', 0);
+
         return null;
     }
 
@@ -91,9 +97,8 @@ class View {
         foreach($this->basePaths as $basePath){
             $view->addBasePath($basePath);
         }
-        $view->declareVars($vars);
 
-        return $view->render($path);
+        return $view->render($path, $vars);
     }
 
     /**
