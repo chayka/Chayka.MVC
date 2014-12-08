@@ -51,7 +51,7 @@ abstract class Controller {
             $res = ob_get_clean();
             return $res.$this->view->render($controller.'/'.$action.'.phtml');
         }else{
-            throw new \Exception('Action not found', 0);
+            throw new \Exception("Action [$callback] not found", 0);
         }
 
 //        return null;
