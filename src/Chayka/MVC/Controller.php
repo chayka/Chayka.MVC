@@ -47,9 +47,9 @@ abstract class Controller {
             InputHelper::setInput($request);
             ob_start();
             $this->init();
-            call_user_func(array($this, $callback));
+            $blockRender = call_user_func(array($this, $callback));
             $res = ob_get_clean();
-            return $res.$this->view->render($controller.'/'.$action.'.phtml');
+            return $blockRender? $res : $res.$this->view->render($controller.'/'.$action.'.phtml');
         }else{
             throw new \Exception("Action [$callback] not found", 0);
         }

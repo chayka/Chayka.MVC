@@ -3,6 +3,7 @@
 namespace Chayka\MVC;
 
 use Chayka\Helpers\FsHelper;
+use Chayka\Helpers\HtmlHelper;
 use Chayka\Helpers\NlsHelper;
 use Chayka\Helpers\Util;
 
@@ -178,5 +179,139 @@ class View {
      */
     public function __get($key){
         return Util::getItem($this->vars, $key);
+    }
+
+    /**
+     * Transform key=>value array to key="value" attributes string
+     *
+     * @param array $attributes
+     * @return string
+     */
+    public function htmlAttributes($attributes){
+        $str = '';
+        foreach($attributes as $key => $value){
+            $str.= sprintf(' %s="%s"', $key, htmlentities($value));
+        }
+
+        return trim($str);
+    }
+
+    /**
+     * Generate html input element.
+     *
+     * @param string $name
+     * @param string $value
+     * @param string string $type
+     * @param array $attributes
+     * @return string
+     */
+    public function formInput($name, $value, $type = "text", $attributes = array()){
+        return sprintf('<input type="%s" name="%s" value="%s"%s/>', $type, $name, $value, $this->htmlAttributes($attributes));
+    }
+
+    /**
+     * Generate html input[type=checkbox] element.
+     *
+     * @param string $name
+     * @param string $value
+     * @param string $checked
+     * @param string $unchecked
+     * @param array $attributes
+     * @return string
+     */
+    public function formCheckbox($name, $value, $checked = "1", $unchecked = "0", $attributes = array()){
+        if($value === $checked){
+            $attributes['checked'] = "checked";
+        }
+        return $this->formInput($name, $unchecked, 'hidden', array())
+              .$this->formInput($name, $checked, 'checkbox', $attributes);
+    }
+
+    /**
+     * Generate set of html input[type=radio] elements.
+     *
+     * @param string $name
+     * @param string $value
+     * @param array $options
+     * @param array $attributes
+     * @param string $separator
+     * @return string
+     */
+    public function formRadio($name, $value, $options, $attributes=array(), $separator=' '){
+        $res = '';
+        foreach($options as $val => $label){
+            $attrs = $attributes;
+            if($value === $val){
+                $attrs['checked'] = "checked";
+            }
+            $res.=sprintf('<label>%s %s</label>%s', $this->formInput($name, $val, 'radio', $attrs), $label, $separator);
+        }
+        return $res;
+    }
+
+    /**
+     * Generate html select element.
+     *
+     * @param string $name
+     * @param string $value
+     * @param array $options
+     * @param array $attributes
+     * @return string
+     */
+    public function formSelect($name, $value, $options = array(), $attributes = array()){
+        $htmlOptions = '';
+        foreach($options as $val => $label){
+            $selected = $value === $val?' selected="selected"':'';
+            $htmlOptions.=sprintf('<option value="%s"%s>%s</option>', $val, $selected, $label);
+        }
+        return sprintf('<select name="%s"%s>%s</select>', $name, $this->htmlAttributes($attributes), $htmlOptions);
+    }
+
+    /**
+     * Generate html textarea element.
+     *
+     * @param $name
+     * @param $value
+     * @param $attributes
+     * @return string
+     */
+    public function formTextarea($name, $value, $attributes = array()){
+        return sprintf('<textarea name="%s"%s>%s</textarea>', $name, $this->htmlAttributes($attributes), $value);
+    }
+
+    /**
+     * Output 'style="display: none;"' if $condition truthy
+     *
+     * @param bool $condition
+     */
+    public static function hidden($condition = true){
+        HtmlHelper::hidden($condition);
+    }
+
+    /**
+     * Output 'style="display: none;"' if $condition truthy
+     *
+     * @param bool $condition
+     */
+    public static function visible($condition = true){
+        HtmlHelper::visible($condition);
+    }
+
+    /**
+     * Output 'checked="checked"' if $condition truthy
+     *
+     * @param bool $condition
+     */
+    public static function checked($condition = true){
+        HtmlHelper::checked($condition);
+    }
+
+    /**
+     * Output 'disabled="disabled"' if $condition truthy
+     *
+     * @param bool $condition
+     */
+    public static function disabled($condition = true){
+        HtmlHelper::disabled($condition);
     }
 } 

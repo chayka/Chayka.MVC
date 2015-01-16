@@ -66,7 +66,7 @@ class Application {
                     }elseif(class_exists($controllerClassname2)){
                         $controllerObject = new $controllerClassname2($this->appPath);
                     }else{
-                        throw new Exception("Controller class [$controllerClassname] not found", 0);
+                        throw new Exception("Controller class [$controllerClassname1 or $controllerClassname2] not found at [$controllerSrc]", 0);
                     }
                     return $controllerObject->dispatch($request);
                 }else{
