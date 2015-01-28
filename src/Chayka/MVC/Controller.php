@@ -44,7 +44,7 @@ abstract class Controller {
         $action = Util::getItem($request, 'action');
         $callback = self::path2action($action);
         if(method_exists($this, $callback)){
-            InputHelper::setInput($request);
+            InputHelper::setParams($request);
             ob_start();
             $this->init();
             $blockRender = call_user_func(array($this, $callback));
@@ -126,5 +126,19 @@ abstract class Controller {
      */
     public static function controller2path($controller){
         return self::action2path($controller);
+    }
+
+    /**
+     * Get Pagination singleton instance
+     *
+     * @param $templatePath
+     * @return Pagination
+     */
+    public function getPagination($templatePath = null){
+        $pagination = Pagination::getInstance();
+        if($templatePath) {
+            $pagination->setViewTemplate($templatePath);
+        }
+        return $pagination;
     }
 } 

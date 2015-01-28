@@ -114,7 +114,7 @@ class Router {
                 }else{
                     return 0;
                 }
-            }elseif($part == '*' && count($pathParts)>$i-$optional){
+            }elseif($part == '*' && count($pathParts)>=$i-$optional){
                 $strength++;
             }else{
                 if(isset($pathParts[$i]) && $part == $pathParts[$i]){

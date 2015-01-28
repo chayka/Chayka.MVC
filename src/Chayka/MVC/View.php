@@ -314,4 +314,18 @@ class View {
     public static function disabled($condition = true){
         HtmlHelper::disabled($condition);
     }
-} 
+
+    /**
+     * Get Pagination singleton instance
+     *
+     * @param $templatePath
+     * @return Pagination
+     */
+    public function getPagination($templatePath = null){
+        $pagination = Pagination::getInstance();
+        if($templatePath) {
+            $pagination->setViewTemplate($templatePath);
+        }
+        return $pagination;
+    }
+}
