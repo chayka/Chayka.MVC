@@ -27,13 +27,20 @@ class View {
         }
     }
 
-    /**
-     * Escape $value and output it;
-     *
-     * @param $value
-     */
-    public function escape($value){
-        echo htmlentities($value);
+	/**
+	 * Escape $value and output it;
+	 *
+	 * @param $value
+	 * @param bool $output
+	 *
+	 * @return string
+	 */
+    public function escape($value, $output = true){
+        $res = htmlentities($value);
+	    if($output){
+		    echo $res;
+	    }
+	    return $res;
     }
 
     /**
