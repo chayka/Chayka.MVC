@@ -377,4 +377,19 @@ class Pagination{
 
         return $html->render($this->getViewTemplate());
     }
+
+	/**
+	 * @param $jsInstance
+	 * @param string $onClick
+	 * @param string $cssClass
+	 * @param array $attrs
+	 *
+	 * @return null|string
+	 */
+	public function renderJs($jsInstance, $onClick = '', $cssClass = '', $attrs = array()){
+		if($onClick){
+			$attrs['data-click'] = $onClick;
+		}
+		return $this->render($attrs, $cssClass, $jsInstance);
+	}
 }
