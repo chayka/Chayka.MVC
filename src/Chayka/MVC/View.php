@@ -268,7 +268,7 @@ class View {
     public function formSelect($name, $value, $options = array(), $attributes = array()){
         $htmlOptions = '';
         foreach($options as $val => $label){
-            $selected = $value === $val?' selected="selected"':'';
+            $selected = $value == $val?' selected="selected"':'';
             $htmlOptions.=sprintf('<option value="%s"%s>%s</option>', $val, $selected, $label);
         }
         return sprintf('<select name="%s"%s>%s</select>', $name, $this->htmlAttributes($attributes), $htmlOptions);
