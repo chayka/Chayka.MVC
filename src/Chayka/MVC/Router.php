@@ -75,11 +75,11 @@ class Router {
      */
     public function compareRoute($requestUri, $route){
         $patternParts = Util::getItem($route, 'url');
-        $paramPattern = Util::getItem($route, 'params');
+        $paramPatterns = Util::getItem($route, 'params');
 
         $url = parse_url('http://a.com'.$requestUri);
         $path = Util::getItem($url, 'path');
-        $path = substr($path, 1);
+        $path = preg_replace('%[//]+$%', '', substr($path, 1));
 
         $pathParts = explode('/', $path);
 
@@ -88,26 +88,32 @@ class Router {
         $optional = 0;
         foreach($patternParts as $i=>$part){
             if(preg_match('%^\?%', $part)){
+	            /**
+	             * '?some-param' means optional param
+	             */
                 if(isset($pathParts[$i])){
                     $strength++;
                     $param = substr($part, 1);
-                    $paramPatt = Util::getItem($paramPattern, $param);
-                    if($paramPatt){
+                    $paramPattern = Util::getItem($paramPatterns, $param);
+                    if($paramPattern){
                         $value = urldecode($pathParts[$i]);
-                        if(!preg_match($paramPatt, $value)){
+                        if(!preg_match($paramPattern, $value)){
                             return 0;
                         }
                     }
                 }
                 $optional++;
             }elseif(preg_match('%^:%', $part)){
+	            /**
+	             * ':some-param' means required param
+	             */
                 if(isset($pathParts[$i])){
                     $strength++;
                     $param = substr($part, 1);
-                    $paramPatt = Util::getItem($paramPattern, $param);
-                    if($paramPatt){
+                    $paramPattern = Util::getItem($paramPatterns, $param);
+                    if($paramPattern){
                         $value = urldecode($pathParts[$i]);
-                        if(!preg_match($paramPatt, $value)){
+                        if(!preg_match($paramPattern, $value)){
                             return 0;
                         }
                     }
@@ -115,8 +121,14 @@ class Router {
                     return 0;
                 }
             }elseif($part == '*' && count($pathParts)>=$i-$optional){
+	            /**
+	             * '*' means any sequence of '/param1/value1/param2/value'
+	             */
                 $strength++;
             }else{
+	            /**
+	             * Url parts exact match check
+	             */
                 if(isset($pathParts[$i]) && $part == $pathParts[$i]){
                     $strength+=10;
                 }else{
@@ -155,6 +167,9 @@ class Router {
             $part = Util::getItem($patternParts, $i);
             if($part && $part !=='*'){
                 if(preg_match('%^\?%', $part)){
+	                /**
+	                 * '?some-param' means optional param
+	                 */
                     if(isset($pathParts[$i])){
                         $strength++;
                         $param = substr($part, 1);
@@ -166,6 +181,9 @@ class Router {
                     }
                     $optional++;
                 }elseif(preg_match('%^:%', $part)){
+	                /**
+	                 * ':some-param' means required param
+	                 */
                     if(isset($pathParts[$i])){
                         $strength++;
                         $param = substr($part, 1);
@@ -178,9 +196,18 @@ class Router {
                 }
 
             }else{
+	            /**
+	             * capture 'param1/value1/param2/value2' sequence for '*'
+	             */
                 if(!$param){
+	                /**
+	                 * capture param name
+	                 */
                     $param = $pathPart;
                 }else{
+	                /**
+	                 * capture param value
+	                 */
                     $value = urldecode($pathPart);
                     if($value){
                         $res[$param] = $value;

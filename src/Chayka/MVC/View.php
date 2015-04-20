@@ -28,7 +28,7 @@ class View {
     }
 
 	/**
-	 * Escape $value and output it;
+	 * Escape $value and output it
 	 *
 	 * @param $value
 	 * @param bool $output
@@ -40,7 +40,7 @@ class View {
 	    if($output){
 		    echo $res;
 	    }
-	    return $res;
+	    return $output?'':$res;
     }
 
     /**
