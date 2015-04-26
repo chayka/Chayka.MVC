@@ -3,6 +3,7 @@
 namespace Chayka\MVC;
 
 use Chayka\Helpers\Util;
+use SebastianBergmann\Exporter\Exception;
 
 class Router {
 
@@ -142,8 +143,8 @@ class Router {
     /**
      * Parse request URI against provided route object
      *
-     * @param $requestUri
-     * @param $route
+     * @param string $requestUri
+     * @param array $route
      * @return array
      */
     public function parseRoute($requestUri, $route){
@@ -226,4 +227,99 @@ class Router {
         }
         return $res;
     }
+
+	public function assembleRoute($params = [], $label = 'default'){
+		$route = Util::getItem($this->routes, $label);
+//		Util::print_r($route);
+		$patternParts = Util::getItem($route, 'url', []);
+		$defaults = Util::getItem($route, 'defaults', []);
+		$params = array_merge($defaults, $params);
+//
+//		$url = parse_url('http://a.com'.$requestUri);
+//		$path = Util::getItem($url, 'path');
+//		$query = Util::getItem($url, 'query');
+//		$path = substr($path, 1);
+//
+//		$pathParts = explode('/', $path);
+//
+//		$strength = 0;
+//
+//		$optional = 0;
+//
+//		$param = '';
+//
+		$res = [];
+		foreach($patternParts as $i=>$part){
+			if($part !=='*'){
+				if(preg_match('%^\?%', $part)){
+					/**
+					 * '?some-param' means optional param
+					 */
+					$param = substr($part, 1);
+					if(isset($params[$param])){
+						$value = urlencode($params[$param]);
+						if(strlen($value)){
+							$res[]=[
+								'value'=> '/'.$value,
+								'default' => $params[$param] == Util::getItem($defaults, $param),
+							];
+						}
+						unset($params[$param]);
+					}
+				}elseif(preg_match('%^:%', $part)){
+					/**
+					 * ':some-param' means required param
+					 */
+					$param = substr($part, 1);
+					if(isset($params[$param])){
+						$value = urlencode($params[$param]);
+						if(strlen($value)){
+							$res[]=[
+								'value'=> '/'.$value,
+								'default' => $params[$param] == Util::getItem($defaults, $param),
+							];
+						}
+						unset($params[$param]);
+					}else{
+						throw new Exception('Required parameter ['.$param.'] not set');
+					}
+				}else{
+					$res[]=[
+						'value'=> '/'.$part,
+						'default' => false,
+					];
+				}
+
+			}else{
+				/**
+				 * capture 'param1/value1/param2/value2' sequence for '*'
+				 */
+				unset($params['controller']);
+				unset($params['action']);
+				foreach($params as $param => $value){
+					if(strlen($value)){
+						$res[]=[
+							'value'=> '/'.urlencode($param).'/'.urlencode($value),
+							'default' => $params[$param] == Util::getItem($defaults, $param),
+						];
+					}
+				}
+			}
+		}
+
+		$url = '';
+		$canOmit = true;
+		for($i = count($res)-1; $i>=0; $i--){
+			$part = $res[$i]['value'];
+			$def = $res[$i]['default'];
+			if(!$def){
+				$canOmit = false;
+			}
+			if(!$canOmit){
+				$url = $part.$url;
+			}
+		}
+		return $url?$url:'/';
+
+	}
 } 

@@ -10,8 +10,8 @@ class Application {
 
     protected $router;
     protected $controllers;
-    protected $appPath;
-    protected $appId;
+    protected $path;
+    protected $id;
 
     /**
      * Application constructor
@@ -20,17 +20,33 @@ class Application {
      * @param string $appId
      */
     public function __construct($appPath, $appId=''){
-        $this->appPath = $appPath;
-        $this->appId = $appId;
+        $this->path = $appPath;
+        $this->id = $appId;
         $this->router = new Router();
-        $this->controllers = array();
-
-//        set_include_path($appPath.PATH_SEPARATOR.get_include_path());
+        $this->controllers = [];
 
         if(file_exists($appPath.'/autoload.php')){
             require_once $appPath.'/autoload.php';
         }
     }
+
+	/**
+	 * Get application id
+	 *
+	 * @return string
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+	/**
+	 * Get application path
+	 *
+	 * @return string
+	 */
+	public function getPath() {
+		return $this->path;
+	}
 
     /**
      * Get router to setup routing
@@ -41,34 +57,54 @@ class Application {
         return $this->router;
     }
 
-    /**
-     * Dispatch requestUri (call the 'controller > action > view' chain)
-     *
-     * @param $requestUri
-     * @return string
-     * @throws Exception
-     */
-    public function dispatch($requestUri){
-        $request = $this->router->parseRequest($requestUri);
+	/**
+	 * Get new or cached controller for classname
+	 *
+	 * @param string $className
+	 * @return Controller
+	 */
+	public function getController($className, $newController = false ){
+		if($newController || !isset($this->controllers[$className])){
+			$this->controllers[$className] = new $className($this);
+		}
+
+		return $this->controllers[$className];
+	}
+
+	/**
+	 * Dispatch requestUri (call the 'controller > action > view' chain)
+	 * Cached controller will be used if available.
+	 * Specify $newController = true if you need a clean one.
+	 *
+	 * @param string|array $request
+	 * @param bool $newController
+	 * @param View $forwardedView
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
+    public function dispatch($request, $newController = false, $forwardedView = null){
+	    if(is_string($request)){
+		    $request = $this->router->parseRequest($request);
+	    }
         if($request){
             $controller = Util::getItem($request, 'controller');
             if($controller){
                 $controllerClassname = Controller::path2controller($controller);
-                $controllerSrc = $this->appPath.'/controllers/'.$controllerClassname.'.php';
+                $controllerSrc = $this->path.'/controllers/'.$controllerClassname.'.php';
 
                 if(file_exists($controllerSrc)){
-                    $controllerClassname1 = '\\'.$this->appId.'\\'.$controllerClassname;
-                    $controllerClassname2 = $this->appId.'_'.$controllerClassname;
+                    $controllerClassName1 = '\\'.$this->id.'\\'.$controllerClassname;
+                    $controllerClassName2 = $this->id.'_'.$controllerClassname;
                     require_once $controllerSrc;
-//                    echo $controllerSrc . ' '.$controllerClassname1.' '.$controllerClassname2;
-                    if(class_exists($controllerClassname1)){
-                        $controllerObject = new $controllerClassname1($this->appPath);
-                    }elseif(class_exists($controllerClassname2)){
-                        $controllerObject = new $controllerClassname2($this->appPath);
+                    if(class_exists($controllerClassName1)){
+                        $controllerObject = $this->getController($controllerClassName1, $newController);
+                    }elseif(class_exists($controllerClassName2)){
+                        $controllerObject = $this->getController($controllerClassName2, $newController);
                     }else{
-                        throw new Exception("Controller class [$controllerClassname1 or $controllerClassname2] not found at [$controllerSrc]", 0);
+                        throw new Exception("Controller class [$controllerClassName1 or $controllerClassName2] not found at [$controllerSrc]", 0);
                     }
-                    return $controllerObject->dispatch($request);
+                    return $controllerObject->dispatch($request, $forwardedView);
                 }else{
                     throw new Exception("Controller file [$controllerSrc] not found", 0);
                 }

@@ -9,14 +9,17 @@ abstract class Controller {
 
     protected $view;
     protected $appPath;
+	protected $application;
+	protected $forwardedRequest = null;
 
     /**
      * Controller constructor
      *
-     * @param $appPath
+     * @param Application $application
      */
-    public function __construct($appPath){
-        $this->appPath = $appPath;
+    public function __construct($application){
+	    $this->application = $application;
+        $this->appPath = $application->getPath();
         $this->view = new View();
         $this->view->addBasePath($this->appPath.'/views/');
     }
@@ -30,25 +33,42 @@ abstract class Controller {
 
     }
 
-    /**
-     * Dispatch request.
-     * Request is formed by Application.
-     * This function finds appropriate action callback and invokes it
-     *
-     * @param $request
-     * @return null|string
-     * @throws \Exception
-     */
-    public function dispatch($request){
-        $controller = Util::getItem($request, 'controller');
+	/**
+	 * Dispatch request.
+	 * Request is formed by Application.
+	 * This function finds appropriate action callback and invokes it
+	 *
+	 * @param array $request
+	 * @param View $forwardedView
+	 *
+	 * @return null|string
+	 * @throws \Exception
+	 */
+    public function dispatch($request, $forwardedView = null){
+	    $cls = get_class($this);
+	    $clsParts = explode('\\', $cls);
+	    $thisController = self::controller2path(end($clsParts));
+        $controller = Util::getItem($request, 'controller', $thisController);
+	    if($controller != $thisController){
+		    return $this->getApplication()->dispatch($request, false, $forwardedView);
+	    }
         $action = Util::getItem($request, 'action');
         $callback = self::path2action($action);
         if(method_exists($this, $callback)){
+	        if($forwardedView){
+		        $this->view = $forwardedView;
+	        }
             InputHelper::setParams($request);
             ob_start();
             $this->init();
             $blockRender = call_user_func(array($this, $callback));
             $res = ob_get_clean();
+	        if($this->forwardedRequest){
+		        $request = $this->forwardedRequest;
+		        $this->forwardedRequest = null;
+		        $res.= $this->dispatch($request, $this->view);
+		        $blockRender = true;
+	        }
             return $blockRender? $res : $res.$this->view->render($controller.'/'.$action.'.phtml');
         }else{
             throw new \Exception("Action [$callback] not found", 0);
@@ -57,17 +77,30 @@ abstract class Controller {
 //        return null;
     }
 
-    /**
-     * TODO: implement forward helper
-     * After dispatching current action forwards processing to specified action controller.
-     *
-     * @param $action
-     * @param string $controller
-     * @param string $appId
-     */
-    public function forward($action, $controller = '', $appId = ''){
+	/**
+	 * After dispatching current action forwards processing to specified action controller.
+	 *
+	 * @param $action
+	 * @param string $controller
+	 *
+	 * @return bool
+	 */
+	public function forward($action, $controller = ''){
+		$params = InputHelper::getParams(false);
+		$params['action'] = $action;
+		if($controller){
+			$params['controller'] = $controller;
+		}
+		$this->forwardedRequest = $params;
+		return true;
+	}
 
-    }
+	/**
+	 * @return Application
+	 */
+	public function getApplication() {
+		return $this->application;
+	}
 
     /**
      * Convert action path string to callback name

@@ -15,11 +15,11 @@ class ApplicationDispatcher {
     /**
      * Register MVC Application that will serve requests
      *
-     * @param string $id
      * @param Application $app
      * @param array(string) $routes
      */
-    public static function registerApplication($id, $app, $routes){
+    public static function registerApplication($app, $routes){
+	    $id = $app->getId();
         self::$applications[$id] = array(
             'app' => $app,
             'routes' => $routes,
