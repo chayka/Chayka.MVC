@@ -3,7 +3,6 @@
 namespace Chayka\MVC;
 
 use Chayka\Helpers\Util;
-use SebastianBergmann\Exporter\Exception;
 
 class Router {
 
@@ -30,6 +29,20 @@ class Router {
         );
         return $this;
     }
+
+	/**
+	 * Add set of route to rest controller
+	 *
+	 * @param string $modelSlug e.g. 'post-model'
+	 * @param string $restUrlPattern e.g '/:id'
+	 * @param array $restParamPatterns e.g. ['id'=>'/^\d+$/']
+	 * @param string $modelClassName e.g. '\\Chayka\\WP\\Models\\PostModel'
+	 * @param string $controller e.g. 'post-model'
+	 * @param array $defaults
+	 */
+	public function addRestRoute($modelSlug, $restUrlPattern = '/:id', $restParamPatterns = array(), $modelClassName = '', $controller = 'rest', $defaults = array()){
+		$this->addRoute($modelSlug.'-rest', $modelSlug.$restUrlPattern, array_merge(array('controller'=>$controller, 'action'=>'REST', 'model'=>$modelClassName), $defaults), $restParamPatterns);
+	}
 
     /**
      * Parse request URI and return input assoc array
@@ -281,7 +294,7 @@ class Router {
 						}
 						unset($params[$param]);
 					}else{
-						throw new Exception('Required parameter ['.$param.'] not set');
+						throw new \Exception('Required parameter ['.$param.'] not set');
 					}
 				}else{
 					$res[]=[
