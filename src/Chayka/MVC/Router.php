@@ -31,20 +31,41 @@ class Router {
     }
 
 	/**
-	 * Add set of route to rest controller
+	 * Add route to rest controller
 	 *
 	 * @param string $modelSlug e.g. 'post-model'
-	 * @param string $restUrlPattern e.g '/:id'
+	 * @param string $restUrlPattern e.g '/?id'
 	 * @param array $restParamPatterns e.g. ['id'=>'/^\d+$/']
 	 * @param string $modelClassName e.g. '\\Chayka\\WP\\Models\\PostModel'
 	 * @param string $controller e.g. 'post-model'
 	 * @param array $defaults
 	 */
-	public function addRestRoute($modelSlug, $restUrlPattern = '/:id', $restParamPatterns = array(), $modelClassName = '', $controller = 'rest', $defaults = array()){
-		$this->addRoute($modelSlug.'-rest', $modelSlug.$restUrlPattern, array_merge(array('controller'=>$controller, 'action'=>'REST', 'model'=>$modelClassName), $defaults), $restParamPatterns);
+	public function addRestRoute($modelSlug, $restUrlPattern = '/?id', $restParamPatterns = array(), $modelClassName = '', $controller = 'rest', $defaults = array()){
+		$this->addRoute($modelSlug, $modelSlug.$restUrlPattern, array_merge(array('controller'=>$controller, 'action'=>'REST', 'model'=>$modelClassName), $defaults), $restParamPatterns);
 	}
 
-    /**
+	/**
+	 * Add set of routes to rest controller
+	 *
+	 * @param string $modelSlug e.g. 'post-model'
+	 * @param string $modelsSlug e.g. 'post-models'
+	 * @param string $restUrlPattern e.g '/?id'
+	 * @param array $restParamPatterns e.g. ['id'=>'/^\d+$/']
+	 * @param string $modelClassName e.g. '\\Chayka\\WP\\Models\\PostModel'
+	 * @param string $controller e.g. 'post-model'
+	 * @param string $listAction
+	 * @param array $defaults
+	 */
+	public function addRestRoutes($modelSlug, $modelsSlug='', $restUrlPattern = '/:id', $restParamPatterns = array(), $modelClassName = '', $controller = 'rest', $listAction='list', $defaults = array()){
+		$this->addRestRoute($modelSlug, $restUrlPattern, $restParamPatterns, $modelClassName, $controller, $defaults);
+		if(!$modelsSlug){
+			$modelsSlug = $modelSlug.'s';
+		}
+		$this->addRoute($modelsSlug, $modelsSlug.'/*', array('controller'=>$controller, 'action'=>$listAction, 'model'=>$modelClassName));
+
+	}
+
+	/**
      * Parse request URI and return input assoc array
      *
      * @param $requestUri
