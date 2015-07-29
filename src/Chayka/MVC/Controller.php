@@ -1,15 +1,42 @@
 <?php
+/**
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
+ */
 
 namespace Chayka\MVC;
 
 use Chayka\Helpers\Util;
 use Chayka\Helpers\InputHelper;
 
+/**
+ * Class Controller is a base class for all the controllers in MVC pattern.
+ * All the requests are routed to it's descendants that should implement at least one
+ * <actionName>Action method.
+ *
+ * For example: /cars/add request is routed to CarsController->addAction().
+ *
+ * CarsController should be a descendant of Controller.
+ *
+ * @package Chayka\MVC
+ */
 abstract class Controller {
-
+    /**
+     * @var View object for current request.
+     */
     protected $view;
-    protected $appPath;
+
+    /**
+     * Instance of the Application that contains controller.
+     * @var Application
+     */
 	protected $application;
+
+    /**
+     * Container for the forwarded requests.
+     * @var null
+     */
 	protected $forwardedRequest = null;
 
     /**
@@ -19,9 +46,8 @@ abstract class Controller {
      */
     public function __construct($application){
 	    $this->application = $application;
-        $this->appPath = $application->getPath();
         $this->view = new View();
-        $this->view->addBasePath($this->appPath.'/views/');
+        $this->view->addBasePath($application->getPath().'/views/');
     }
 
 
@@ -96,6 +122,8 @@ abstract class Controller {
 	}
 
 	/**
+     * Get Application instance
+     *
 	 * @return Application
 	 */
 	public function getApplication() {

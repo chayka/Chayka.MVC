@@ -1,17 +1,34 @@
 <?php
 /**
- * Basic rest controller
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
  */
 
 namespace Chayka\MVC;
-
 
 use Chayka\Helpers\InputHelper;
 use Chayka\Helpers\JsonHelper;
 use Chayka\Helpers\Util;
 
+/**
+ * Class RestController extends Controller and provides routing to it's Actions
+ * based on the type of HTTP request method.
+ *
+ * HTTP POST    -> createAction()   | postAction()
+ * HTTP GET     -> readAction()     | getAction()
+ * HTTP PUT     -> updateAction()   | putAction
+ * HTTP DELETE  -> deleteAction()
+ *
+ * @package Chayka\MVC
+ */
 class RestController extends Controller {
 
+    /**
+     * This is a base init method for the controller is run always before Action processing.
+     * When overriding RestController->init() mind to keep parent::init()
+     * or at least InputHelper::captureInput() for the RestController magic to happen.
+     */
 	public function init(){
 		InputHelper::captureInput();
 	}

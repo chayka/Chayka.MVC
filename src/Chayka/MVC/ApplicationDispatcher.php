@@ -1,16 +1,46 @@
 <?php
+/**
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
+ */
 
 namespace Chayka\MVC;
 
 use Chayka\Helpers\Util;
 
-
+/**
+ * Instance of ApplicationDispatcher class dispatches HTTP request
+ * to the matched Application instance
+ *
+ * Class ApplicationDispatcher
+ * @package Chayka\MVC
+ */
 class ApplicationDispatcher {
+
+    /**
+     * Hash map of registered by id applications.
+     *
+     * @var array
+     */
     protected static $applications = array();
+
+    /**
+     * Hash map of routes and corresponding application ids.
+     *
+     * @var array
+     */
     protected static $routes = array();
+
+    /**
+     * Set of routes that are shouldn't be processed and issue 404.
+     *
+     * @var array
+     */
     protected static $forbiddenRoutes = array();
-    protected static $notFound = false;
-    protected static $isMainPage = false;
+
+//    protected static $notFound = false;
+//    protected static $isMainPage = false;
 
     /**
      * Register MVC Application that will serve requests

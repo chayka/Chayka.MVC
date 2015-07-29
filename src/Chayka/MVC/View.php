@@ -1,4 +1,9 @@
 <?php
+/**
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
+ */
 
 namespace Chayka\MVC;
 
@@ -7,11 +12,44 @@ use Chayka\Helpers\HtmlHelper;
 use Chayka\Helpers\NlsHelper;
 use Chayka\Helpers\Util;
 
+/**
+ * Instance of View class renders view by require'ing .phtml file and populating $vars
+ * so that they can be accessed by $this->varName.
+ *
+ * Inside .phtml $this contains the handle to the View object that called it,
+ * so all View methods can be called using $this (e.g. $this->hidden()).
+ *
+ * Nested render() calls are allowed.
+ *
+ * @package Chayka\MVC
+ */
 class View {
 
+    /**
+     * Vars assigned to the view
+     *
+     * @var array
+     */
     protected $vars = array();
+
+    /**
+     * Set of paths where to look for rendered .phtml file
+     * @var array
+     */
     protected $basePaths = array('');
+
+    /**
+     * Path to the rendering script
+     * @var string
+     */
     protected $path = '';
+
+    /**
+     * Flag that designates that NLS is enabled.
+     * If NLS is enabled, the View will search for the localized version of .phtml (.ru.phtml - for instance)
+     *
+     * @var bool
+     */
     protected $nls = false;
 
     /**

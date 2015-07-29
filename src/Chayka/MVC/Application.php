@@ -1,16 +1,46 @@
 <?php
+/**
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
+ */
 
 namespace Chayka\MVC;
 
 use Chayka\Helpers\Util;
 use \Exception;
 
-
+/**
+ * Instance of Application class is a managing object for MVC application instance
+ * @package Chayka\MVC
+ */
 class Application {
 
+    /**
+     * Router that dispatches request to the controller based on the existing routes.
+     *
+     * @var Router
+     */
     protected $router;
+
+    /**
+     * Cache for initialized controllers
+     *
+     * @var array
+     */
     protected $controllers;
+
+    /**
+     * Application base path
+     *
+     * @var string
+     */
     protected $path;
+
+    /**
+     * Application id
+     * @var string
+     */
     protected $id;
 
     /**
@@ -57,12 +87,14 @@ class Application {
         return $this->router;
     }
 
-	/**
-	 * Get new or cached controller for classname
-	 *
-	 * @param string $className
-	 * @return Controller
-	 */
+    /**
+     * Get new or cached controller for classname
+     *
+     * @param string $className
+     * @param bool $newController
+     *
+     * @return Controller
+     */
 	public function getController($className, $newController = false ){
 		if($newController || !isset($this->controllers[$className])){
 			$this->controllers[$className] = new $className($this);

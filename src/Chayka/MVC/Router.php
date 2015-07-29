@@ -1,11 +1,27 @@
 <?php
+/**
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
+ */
 
 namespace Chayka\MVC;
 
 use Chayka\Helpers\Util;
 
+/**
+ * Instance of Router class dispatches HTTP request to the SomeController->someAction()
+ * according to the provided rules.
+ *
+ * @package Chayka\MVC
+ */
 class Router {
 
+    /**
+     * A set of routes (routing rules)
+     *
+     * @var array
+     */
     protected $routes = array();
 
     /**
@@ -262,26 +278,21 @@ class Router {
         return $res;
     }
 
+    /**
+     * Assembles href from the provided params using the route designated by $label
+     *
+     * @param array $params
+     * @param string $label
+     *
+     * @return string
+     * @throws \Exception
+     */
 	public function assembleRoute($params = [], $label = 'default'){
 		$route = Util::getItem($this->routes, $label);
-//		Util::print_r($route);
 		$patternParts = Util::getItem($route, 'url', []);
 		$defaults = Util::getItem($route, 'defaults', []);
 		$params = array_merge($defaults, $params);
-//
-//		$url = parse_url('http://a.com'.$requestUri);
-//		$path = Util::getItem($url, 'path');
-//		$query = Util::getItem($url, 'query');
-//		$path = substr($path, 1);
-//
-//		$pathParts = explode('/', $path);
-//
-//		$strength = 0;
-//
-//		$optional = 0;
-//
-//		$param = '';
-//
+
 		$res = [];
 		foreach($patternParts as $i=>$part){
 			if($part !=='*'){
@@ -356,4 +367,4 @@ class Router {
 		return $url?$url:'/';
 
 	}
-} 
+}

@@ -1,7 +1,19 @@
 <?php
+/**
+ * Chayka.Framework is a framework that enables WordPress development in a MVC/OOP way.
+ *
+ * More info: https://github.com/chayka/Chayka.Framework
+ */
 
 namespace Chayka\MVC;
 
+/**
+ * Instance of Pagination class is a pagination model.
+ * Since in most cases there is only one pagination model per request,
+ * for simplicity it can be accessed as singleton.
+ *
+ * @package Chayka\MVC
+ */
 class Pagination{
 
     /**
@@ -26,11 +38,15 @@ class Pagination{
     protected $packSize = 10;
 
     /**
+     * Pack start index
+     *
      * @var int
      */
     protected $packStart = 0;
 
     /**
+     * Pack ending index
+     *
      * @var int
      */
     protected $packFinish = 0;
@@ -255,6 +271,9 @@ class Pagination{
         return $this;
     }
 
+    /**
+     * Computes pack starting and ending indices
+     */
     protected function computePack(){
         if(!$this->packStart){
             $packStart = 1;
@@ -379,6 +398,8 @@ class Pagination{
     }
 
 	/**
+     * Render javascript powered pagination
+     *
 	 * @param $jsInstance
 	 * @param string $onClick
 	 * @param string $cssClass
