@@ -31,6 +31,10 @@ class Router {
      * my_controller/some_action/:some_part/*
      * my/act/?some/*
      *
+     * prefix ':' - means obligatory param
+     * prefix '?' - means optional param
+     * trailing '*' - means that all the rest params (/param1/value1/param2/value2) should be captured
+     *
      * @param string $label
      * @param string $urlPattern
      * @param array $defaults
