@@ -102,6 +102,24 @@ Escape $value and output it
 
 
 
+### json
+
+    string Chayka\MVC\View::json($data, boolean|false $singleQuotes, boolean|true $output)
+
+JSON encode value and output it
+
+
+
+* Visibility: **public**
+
+
+#### Arguments
+* $data **mixed**
+* $singleQuotes **boolean|false**
+* $output **boolean|true**
+
+
+
 ### addBasePath
 
     mixed Chayka\MVC\View::addBasePath($basePath)

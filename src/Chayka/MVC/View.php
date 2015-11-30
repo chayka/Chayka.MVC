@@ -9,6 +9,7 @@ namespace Chayka\MVC;
 
 use Chayka\Helpers\FsHelper;
 use Chayka\Helpers\HtmlHelper;
+use Chayka\Helpers\JsonHelper;
 use Chayka\Helpers\NlsHelper;
 use Chayka\Helpers\Util;
 
@@ -79,6 +80,23 @@ class View {
 		    echo $res;
 	    }
 	    return $output?'':$res;
+    }
+
+    /**
+     * JSON encode value and output it
+     *
+     * @param $data
+     * @param bool|false $singleQuotes
+     * @param bool|true $output
+     *
+     * @return string
+     */
+    public function json($data, $singleQuotes = false, $output = true){
+        $res = JsonHelper::encode($data, $singleQuotes);
+        if($output){
+            echo $res;
+        }
+        return $output?'':$res;
     }
 
     /**
