@@ -121,7 +121,9 @@ class View {
     public function render($path, $vars = array()){
 
         if($vars && is_array($vars) && count($vars)){
-            $this->declareVars($vars);
+            foreach($vars as $key=>$val){
+                $this->vars[$key] = $val;
+            }
         }
 
         foreach($this->basePaths as $base){
