@@ -97,7 +97,6 @@ abstract class Controller {
 	        }
             return $blockRender? $res : $res.$this->view->render($controller.'/'.$action.'.phtml');
         }else{
-            ob_end_clean();
             throw new \Exception("Action [$callback] not found", 0);
         }
 
